@@ -1,5 +1,5 @@
 const CACHE = 'enchantments-v1';
-const SHELL = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const SHELL = ['/enchantments/', '/enchantments/index.html', '/enchantments/manifest.json', '/enchantments/icon-192.png', '/enchantments/icon-512.png'];
 
 // Never cache these — let them go straight to the network
 const BYPASS = [
@@ -37,7 +37,7 @@ self.addEventListener('fetch', (e) => {
   // For navigation requests return cached index.html (SPA shell)
   if (e.request.mode === 'navigate') {
     e.respondWith(
-      caches.match('/index.html').then((r) => r || fetch(e.request))
+      caches.match('/enchantments/index.html').then((r) => r || fetch(e.request))
     );
     return;
   }
