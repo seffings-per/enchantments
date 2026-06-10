@@ -1,7 +1,6 @@
 const CACHE = 'enchantments-v1';
-const SHELL = ['/enchantments/', '/enchantments/index.html', '/enchantments/manifest.json', '/enchantments/icon-192.png', '/enchantments/icon-512.png'];
+const SHELL = ['/enchantments/manifest.json', '/enchantments/icon-192.png', '/enchantments/icon-512.png'];
 
-// Never cache these — let them go straight to the network
 const BYPASS = [
   'firestore.googleapis.com',
   'firebase.googleapis.com',
@@ -14,8 +13,11 @@ const BYPASS = [
 ];
 
 self.addEventListener('install', (e) => {
+  // Cache individual assets — don't let one failure abort the whole install
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) =>
+      Promise.allSettled(SHELL.map((url) => c.add(url)))
+    ).then(() => self.skipWaiting())
   );
 });
 
@@ -30,24 +32,18 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = e.request.url;
 
-  // Pass through non-GET and bypass-listed hosts
   if (e.request.method !== 'GET') return;
   if (BYPASS.some((h) => url.includes(h))) return;
 
-  // For navigation requests return cached index.html (SPA shell)
   if (e.request.mode === 'navigate') {
-    e.respondWith(
-      caches.match('/enchantments/index.html').then((r) => r || fetch(e.request))
-    );
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }
 
-  // Cache-first for shell assets
   e.respondWith(
     caches.match(e.request).then((r) => r || fetch(e.request).then((res) => {
       if (res.ok && res.type !== 'opaque') {
-        const clone = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, clone));
+        caches.open(CACHE).then((c) => c.put(e.request, res.clone()));
       }
       return res;
     }))
