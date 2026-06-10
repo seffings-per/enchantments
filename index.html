@@ -6,8 +6,8 @@
   <title>enchantments</title>
   <meta name="description" content="Art projects planner">
   <meta name="theme-color" content="#1f1a17">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="/enchantments/manifest.json">
+  <link rel="apple-touch-icon" href="/enchantments/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="enchantments">
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/enchantments/sw.js', { scope: '/enchantments/' }).catch(() => {});
       });
     }
   </script>
