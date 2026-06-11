@@ -1,0 +1,4 @@
+* text=auto
+index.html text eol=lf
+sw.js text eol=lf
+manifest.json text eol=lf
